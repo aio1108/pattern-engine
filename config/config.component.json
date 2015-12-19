@@ -1,0 +1,25 @@
+{
+  "components": {
+    "GRID": {
+      "name": "grid"
+    },
+    "SELECT": {
+      "name": "selectable"
+    },
+    "MULTISELECT": {
+      "name": "selectable"
+    },
+    "RADIO": {
+      "name": "selectable"
+    },
+    "CHECKBOX": {
+      "name": "selectable"
+    },
+    "IMAGE": {
+      "name": "image"
+    },
+    "IMAGEUPLOAD": {
+      "name": "image"
+    }
+  }
+}
