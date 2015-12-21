@@ -1,15 +1,14 @@
 "use strict";
 
 var async = require("async"),
-	path = require("path"),
-	_ = require("underscore");
+	path = require("path");
 
 exports.run = function(xmlDoc, variableContainer, configuration, compiler, next){
 	var dsElements = xmlDoc.find("./dataSetList/*");
 	processDatasetElements(dsElements, variableContainer, configuration, compiler, function(err){
 		if(err){
 			next(err);
-			return;	
+			return;
 		}
 		next(null, xmlDoc, variableContainer, configuration, compiler);
 	});
@@ -17,8 +16,8 @@ exports.run = function(xmlDoc, variableContainer, configuration, compiler, next)
 
 function processDatasetElements(dsElements, variableContainer, configuration, compiler, callback){
 	async.eachSeries(
-		dsElements, 
-		function(dsElement, next){ 
+		dsElements,
+		function(dsElement, next){
 			if(dsElement.name() === "dataset"){
 				processDataset(dsElement, variableContainer, configuration, compiler, function(err){
 					if(err){
@@ -37,6 +36,7 @@ function processDatasetElements(dsElements, variableContainer, configuration, co
 				});
 			}else{
 				next(null);
+				return;
 			}
 		},
 		function(err){
@@ -93,7 +93,7 @@ function processDataset(ds, variableContainer, configuration, compiler, callback
 }
 
 function processVariable(variable, variableContainer, compiler, callback){
-	var variableName = variable.attr("name"), 
+	var variableName = variable.attr("name"),
 		variableValue = variable.attr("value");
 	if(!variableName || !variableValue){
 		process.nextTick(function(){
@@ -211,7 +211,7 @@ function getDataByService(ds, variableContainer, configuration, compiler, callba
 	}catch(err){
 		process.nextTick(function(){
 			callback(err);
-		});	
+		});
 	}
 }
 
@@ -230,7 +230,7 @@ function getDataBySQL(ds, variableContainer, configuration, compiler, callback){
 
 	multiple = sqlElement.attr("multiple");
 	if(multiple && multiple.value() === "true"){
-		multipleRecordsets = true
+		multipleRecordsets = true;
 	}
 
 	compiler.replace(sqlElement.text(), variableContainer, function(err, sql){
@@ -241,21 +241,21 @@ function getDataBySQL(ds, variableContainer, configuration, compiler, callback){
 			return;
 		}
 		async.waterfall(
-				[
-					(getConnection).bind({ dataSource: dataSource, configuration: configuration }),
-					(executeSQL).bind({ ds: ds, sql: sql, multipleRecordsets: multipleRecordsets, configuration: configuration })
-				],
-				function(err, data){
-					if(err){
-						process.nextTick(function(){
-							callback(err);
-						});
-						return;
-					}
+			[
+				(getConnection).bind({ dataSource: dataSource, configuration: configuration }),
+				(executeSQL).bind({ ds: ds, sql: sql, multipleRecordsets: multipleRecordsets, configuration: configuration })
+			],
+			function(err, data){
+				if(err){
 					process.nextTick(function(){
-						callback(null, data);
+						callback(err);
 					});
+					return;
 				}
+				process.nextTick(function(){
+					callback(null, data);
+				});
+			}
 		);
 	});
 }
@@ -316,7 +316,7 @@ function executeSQL(connection, next){
 				if(err){
 					logger.error(err);
 					process.nextTick(function(){
-						next({ message: err.code+" - EXECUTE SQL ERROR." });
+						next({ message: err.code + " - EXECUTE SQL ERROR." });
 					});
 					return;
 				}

@@ -5,7 +5,7 @@ var async = require("async"),
 
 exports.run = function(gridElements, variableContainer, configuration, compiler, callback){
 	async.each(
-		gridElements, 
+		gridElements,
 		function(gridElement, next){
 			processGridElement(gridElement, variableContainer, compiler, function(err){
 				if(err){
@@ -73,7 +73,7 @@ function processGridRows(next){
 		rowXmlStr = "<rows>",
 		variableContainer = this.variableContainer,
 		rows = gridElement.node("rows", ""),
-		dataset = (_.isArray(variableContainer[ds.value()]))?variableContainer[ds.value()]:[];
+		dataset = (_.isArray(variableContainer[ds.value()])) ? variableContainer[ds.value()] : [];
 
 	async.eachSeries(
 		dataset,
@@ -84,7 +84,7 @@ function processGridRows(next){
 				columns,
 				function(column, cb){
 					var html, columnName, cellValue,
-						type = (!column.attr("type"))?"":column.attr("type").value();
+						type = (!column.attr("type")) ? "" : column.attr("type").value();
 					if(type === "HTML"){
 						html = column.text();
 						compiler.replace(html, data, function(err, str){
@@ -98,14 +98,17 @@ function processGridRows(next){
 					}else{
 						columnName = column.attr("name");
 						if(!columnName && column.attr("value")){
-							cellValue = (_.isUndefined(variableContainer[column.attr("value").value()]))?"":variableContainer[column.attr("value").value()];
+							cellValue = (_.isUndefined(variableContainer[column.attr("value").value()])) ? "" : variableContainer[column.attr("value").value()];
 						}else{
-							cellValue = (_.isUndefined(data[columnName.value()]))?"":data[columnName.value()];
+							cellValue = (_.isUndefined(data[columnName.value()])) ? "" : data[columnName.value()];
 						}
-						if(cellValue === null) cellValue = "";
+						if(cellValue === null){
+							cellValue = "";
+						}
 						row.node("cell", cellValue.toString());
 						rowXmlStr = rowXmlStr + "<cell>" + cellValue + "</cell>";
 						cb(null);
+						return;
 					}
 				},
 				function(err){
@@ -140,11 +143,11 @@ function processGridColumns(next){
 
 	_.each(columns, function(column, index){
 		var alignAttr = column.attr("align"),
-				typeAttr = column.attr("type"),
-				label = (!column.attr("label"))?"":column.attr("label").value(),
-				width = (!column.attr("width"))?"50":column.attr("width").value(),
-				align = (!alignAttr)?"left":alignAttr.value(),
-				type = (!typeAttr)?"label":typeAttr.value();
+			typeAttr = column.attr("type"),
+			label = (!column.attr("label")) ? "" : column.attr("label").value(),
+			width = (!column.attr("width")) ? "50" : column.attr("width").value(),
+			align = (!alignAttr) ? "left" : alignAttr.value(),
+			type = (!typeAttr) ? "label" : typeAttr.value();
 		if(index > 0){
 			gridHeaderContent = gridHeaderContent + ",";
 			gridWidthContent = gridWidthContent + ",";

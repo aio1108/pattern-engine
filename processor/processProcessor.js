@@ -43,7 +43,7 @@ exports.run = function(xmlDoc, variableContainer, configuration, compiler, next)
 	
 	async.eachSeries(
 		processElements,
-		function(item , callback){
+		function(item, callback){
 			var elementName = item.name();
 			if(elementName === "process"){
 				handleProcessElement(item, variableContainer, configuration, compiler, function(err){
@@ -87,11 +87,12 @@ exports.run = function(xmlDoc, variableContainer, configuration, compiler, next)
 				});
 			}else{
 				callback(null);
+				return;
 			}
 		}, function(err){
 			if(err){
 				next(err);
-				return;	
+				return;
 			}
 			next(null, xmlDoc, variableContainer, configuration, compiler);
 		}
@@ -351,13 +352,14 @@ function handleConditionElement(item, variableContainer, configuration, compiler
 			});
 		}else{
 			callback(null);
+			return;
 		}
 	});
 }
 
 function handleVariableElement(variable, variableContainer, compiler, callback){
 	var variableName = variable.attr("name"),
-			variableValue = variable.attr("value");
+		variableValue = variable.attr("value");
 	if(!variableName || !variableValue){
 		process.nextTick(function(){
 			callback({ message: "variable element must set @name and @value attribute." });
@@ -397,7 +399,7 @@ function handleProcessElement(item, variableContainer, configuration, compiler, 
 				next(null);
 			});
 		},
-		function (err) {
+		function(err){
 			if(err){
 				process.nextTick(function(){
 					callback(err);
@@ -519,7 +521,7 @@ function executeServiceProcess(ps, variableContainer, configuration, compiler, c
 	}catch(err){
 		process.nextTick(function(){
 			callback(err);
-		});	
+		});
 	}
 }
 
@@ -560,7 +562,7 @@ function executeSQLProcess(ps, variableContainer, configuration, compiler, callb
 		async.waterfall(
 			[
 				(getConnection).bind({ transaction: transaction, dataSource: dataSource, variableContainer: variableContainer, configuration: configuration }),
-				(executeSQL).bind({ ps: ps, sql: sql , multipleRecordsets: multipleRecordsets, configuration: configuration })
+				(executeSQL).bind({ ps: ps, sql: sql, multipleRecordsets: multipleRecordsets, configuration: configuration })
 			],
 			function(err, data){
 				if(err){

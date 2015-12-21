@@ -93,6 +93,7 @@ function runPattern(next){
 		});
 	}catch(err){
 		next(err);
+		return;
 	}
 }
 

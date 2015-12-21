@@ -12,8 +12,10 @@ exports.run = function(xmlDoc, variableContainer, configuration, compiler, next)
 		try{
 			compiledXmlDoc = libxmljs.parseXmlString(str);
 			next(null, compiledXmlDoc, variableContainer, configuration, compiler);
+			return;
 		}catch(e){
 			next(e);
+			return;
 		}
 	});
 };

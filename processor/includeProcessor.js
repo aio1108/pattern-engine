@@ -31,10 +31,10 @@ function getIncludeDsElements(next){
 		function(includeElement, callback){
 			async.waterfall(
 				[
-					(readIncludeFile),bind({ includeElement:includeElement, configuration:configuration }),
-					(getImportElements).bind({ includeElement:includeElement, xpath:"./dataSetList/*" }),
-					(setAttributes).bind({ includeElement:includeElement }),
-					(insertImportElements).bind({ includeElement:includeElement })
+					(readIncludeFile).bind({ includeElement: includeElement, configuration: configuration }),
+					(getImportElements).bind({ includeElement: includeElement, xpath: "./dataSetList/*" }),
+					(setAttributes).bind({ includeElement: includeElement }),
+					(insertImportElements).bind({ includeElement: includeElement })
 				],
 				function(err){
 					if(err){
@@ -64,21 +64,21 @@ function getIncludeProcessElements(next){
 		function(includeElement, callback){
 			async.waterfall(
 				[
-					(readIncludeFile).bind({ includeElement:includeElement, configuration:configuration }),
-					(getImportElements).bind({ includeElement:includeElement, xpath:"./processList/*" }),
-					function(importElements, next){
+					(readIncludeFile).bind({ includeElement: includeElement, configuration: configuration }),
+					(getImportElements).bind({ includeElement: includeElement, xpath: "./processList/*" }),
+					function(importElements, cb){
 						_.each(importElements, function(importElement){
 							var childProcessElements;
 							if(importElement.name() !== "process"){
 								childProcessElements = importElement.find(".//process");
-								(setAttributes).bind({ includeElement:includeElement })(childProcessElements, function(){});
+								(setAttributes).bind({ includeElement: includeElement })(childProcessElements, function(){});
 							}else{
-								(setAttributes).bind({ includeElement:includeElement })([importElement], function(){});
+								(setAttributes).bind({ includeElement: includeElement })([importElement], function(){});
 							}
 						});
-						next(null, importElements);
+						cb(null, importElements);
 					},
-					(insertImportElements).bind({ includeElement:includeElement })
+					(insertImportElements).bind({ includeElement: includeElement })
 				],
 				function(err){
 					if(err){
@@ -124,7 +124,7 @@ function getImportElements(data, next){
 		includeElement = this.includeElement,
 		xpath = this.xpath,
 		targetAttr = includeElement.attr("target"),
-		target = (targetAttr)?"[@id=\"" + targetAttr.value() + "\"]":"";
+		target = (targetAttr) ? "[@id=\"" + targetAttr.value() + "\"]" : "";
 	importXmlDoc = libxmljs.parseXmlString(data);
 	importElements = importXmlDoc.find(xpath + target);
 	next(null, importElements);

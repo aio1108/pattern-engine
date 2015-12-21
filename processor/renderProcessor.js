@@ -4,63 +4,63 @@ var path = require("path"),
 	fs = require("fs"),
 	async = require("async"),
 	xml2js = require("xml2js").parseString,
-    _ = require("underscore");
+	_ = require("underscore");
 
 exports.run = function(xmlDoc, variableContainer, configuration, compiler, next){
-    var templateFileName, templateFilePath,
+	var templateFileName, templateFilePath,
 		templateElement = xmlDoc.get("./template"),
 		config = configuration.get(),
 		renderEngine = config["render"],
 		logger = config["logger"],
-        showJSON = variableContainer["_params"]["showJSON"];
+		showJSON = variableContainer["_params"]["showJSON"];
 
 	if(renderEngine === null){
 		next({ message: "Setting render is required before run the render process." });
 		return;
 	}
 
-    if(showJSON !== undefined && showJSON == "true"){
-        async.waterfall(
-            [
-                (transformXmlToJs).bind({ xmlDoc: xmlDoc })
-            ],
-            function(err, result){
-                if(err){
-                    next(err);
-                    return;
-                }
-                result.data = variableContainer.data;
-                next(null, result, variableContainer, configuration, compiler);
-            }
-        );
-    }else{
-        if(!templateElement){
-            next({ message: "<template> element does not exist." });
-            return;
-        }
-        templateFileName = templateElement.text();
-        if(templateFileName === ""){
-            next({ message: "template file name does not set" });
-            return;
-        }
+	if(showJSON !== undefined && showJSON === "true"){
+		async.waterfall(
+			[
+				(transformXmlToJs).bind({ xmlDoc: xmlDoc })
+			],
+			function(err, result){
+				if(err){
+					next(err);
+					return;
+				}
+				result.data = variableContainer.data;
+				next(null, result, variableContainer, configuration, compiler);
+			}
+		);
+	}else{
+		if(!templateElement){
+			next({ message: "<template> element does not exist." });
+			return;
+		}
+		templateFileName = templateElement.text();
+		if(templateFileName === ""){
+			next({ message: "template file name does not set" });
+			return;
+		}
 
-        templateFilePath = path.join(config["templateHome"], templateFileName);
+		templateFilePath = path.join(config["templateHome"], templateFileName);
 
-        async.waterfall(
-            [
-                (isTemplateFileExists).bind({ templateFilePath: templateFilePath }),
-                (transformXmlToJs).bind({ xmlDoc: xmlDoc , variableContainer:variableContainer}),
-                (runTemplateTransform).bind({ templateFilePath: templateFilePath, renderEngine: renderEngine, logger: logger })
-            ],
-            function(err, result){
-                if(err){
-                    next(err);
-                    return;
-                }
-                next(null, result, variableContainer, configuration, compiler);
-            }
-        );
-    }
+		async.waterfall(
+			[
+				(isTemplateFileExists).bind({ templateFilePath: templateFilePath }),
+				(transformXmlToJs).bind({ xmlDoc: xmlDoc, variableContainer: variableContainer }),
+				(runTemplateTransform).bind({ templateFilePath: templateFilePath, renderEngine: renderEngine, logger: logger })
+			],
+			function(err, result){
+				if(err){
+					next(err);
+					return;
+				}
+				next(null, result, variableContainer, configuration, compiler);
+			}
+		);
+	}
 };
 
 function isTemplateFileExists(next){
@@ -76,7 +76,7 @@ function isTemplateFileExists(next){
 
 function transformXmlToJs(next){
 	var xmlDoc = this.xmlDoc,
-        variableContainer = this.variableContainer,
+		variableContainer = this.variableContainer,
 		xmlStr = xmlDoc.toString();
 	try{
 		xml2js(xmlStr, { explicitCharkey: true }, function(err, result){
@@ -84,14 +84,15 @@ function transformXmlToJs(next){
 				next(err);
 				return;
 			}
-            result.req = {"session":{}};
+			result.req = { "session": {} };
 			if(variableContainer["_params"]["session"]){
-				_.extend(result.req.session , variableContainer["_params"]["session"]);
+				_.extend(result.req.session, variableContainer["_params"]["session"]);
 			}
-            next(null, result);
+			next(null, result);
 		});
 	}catch(err){
 		next(err);
+		return;
 	}
 }
 

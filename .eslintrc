@@ -14,13 +14,16 @@
     "space-before-blocks": [2, "never"],
     "space-before-function-paren": [2, "never"],
     "no-trailing-spaces": [2, { "skipBlankLines": true }],
-    "max-len": [2, 200, 4],
+    "max-len": [1, 200, 4],
     "func-style": 0,
     "no-extra-parens": [2, "functions"],
     "no-trailing-spaces": [2, { "skipBlankLines": true }],
-    "callback-return": 1,
-    "max-params": [2, 5],
+    "callback-return": 2,
+    "max-params": [1, 5],
     "filenames/filenames": 0,
-    "no-shadow": [2, { "allow": ["err"] }]
+    "no-shadow": [2, { "allow": ["err"] }],
+    "max-statements": [1, 30],
+    "no-use-before-define": [2, "nofunc"],
+    "operator-assignment": 0
   }
 }
