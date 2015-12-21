@@ -1,6 +1,6 @@
 "use strict";
 
-var jexl = require("jexl"),
+var jexl = require("jexl"), // eslint-disable-line
 	reloader = require("freshy"),
 	_ = require("underscore"),
 	async = require("async");

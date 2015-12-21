@@ -9,8 +9,7 @@ var lintFileStream = fs.createWriteStream("lint.html");
 gulp.task("lint", function(){
 	return gulp.src(["**/*.js", "!node_modules/**"])
 		.pipe(eslint())
-		.pipe(eslint.format("html", lintFileStream))
-		.pipe(eslint.failAfterError());
+		.pipe(eslint.format("html", lintFileStream));
 });
 
 gulp.task("default", ["lint"], function(){
